@@ -1,6 +1,12 @@
 import { Command } from "commander";
 import { consola } from "consola";
-import { gitCreateBranch, gitFetch, gitHasRemote } from "../utils/git";
+import {
+  gitCreateBranch,
+  gitFetch,
+  gitGetCurrentBranch,
+  gitHasBranch,
+  gitHasRemote,
+} from "../utils/git";
 
 export const nbCommand = (program: Command) => {
   program
@@ -23,7 +29,8 @@ export const nbCommand = (program: Command) => {
 
       try {
         const hasOrigin = await gitHasRemote("origin");
-        let startPoint = baseBranch;
+        const currentBranch = await gitGetCurrentBranch();
+        let startPoint: string | undefined = baseBranch;
 
         if (hasOrigin) {
           consola.info(`Fetching ${baseBranch} from origin...`);
@@ -32,14 +39,47 @@ export const nbCommand = (program: Command) => {
             startPoint = `origin/${baseBranch}`;
           } catch {
             consola.warn(
-              `Failed to fetch ${baseBranch} from origin. Using local ${baseBranch} instead.`,
+              `Failed to fetch ${baseBranch} from origin. Checking local...`,
             );
+            const hasLocal = await gitHasBranch(baseBranch);
+            if (!hasLocal) {
+              if (currentBranch === baseBranch) {
+                consola.info(
+                  `Branch '${baseBranch}' is the current branch but has no commits yet. Creating from current state.`,
+                );
+                startPoint = undefined;
+              } else {
+                throw new Error(
+                  `Branch '${baseBranch}' not found locally or on origin.`,
+                );
+              }
+            }
           }
         } else {
-          consola.info(`No 'origin' remote found. Using local ${baseBranch}.`);
+          consola.info(
+            `No 'origin' remote found. Checking local ${baseBranch}...`,
+          );
+          const hasLocal = await gitHasBranch(baseBranch);
+          if (!hasLocal) {
+            if (currentBranch === baseBranch) {
+              consola.info(
+                `Branch '${baseBranch}' is the current branch but has no commits yet. Creating from current state.`,
+              );
+              startPoint = undefined;
+            } else {
+              throw new Error(`Local branch '${baseBranch}' not found.`);
+            }
+          }
         }
 
-        consola.info(`Creating branch ${fullBranchName} from ${startPoint}...`);
+        if (startPoint) {
+          consola.info(
+            `Creating branch ${fullBranchName} from ${startPoint}...`,
+          );
+        } else {
+          consola.info(`Creating branch ${fullBranchName}...`);
+        }
+
         await gitCreateBranch(fullBranchName, startPoint);
         consola.success(
           `Successfully created and switched to branch: ${fullBranchName}`,

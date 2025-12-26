@@ -58,6 +58,15 @@ export const gitHasRemote = async (remote: string) => {
   }
 };
 
+export const gitHasBranch = async (branch: string) => {
+  try {
+    await execa("git", ["rev-parse", "--verify", branch]);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 export const gitGetMergedBranches = async (baseBranch: string) => {
   const { stdout } = await execa("git", ["branch", "--merged", baseBranch]);
   return stdout;
