@@ -1,21 +1,23 @@
 {
-  "name": "@takuma-ru/g",
+  "name": "git-turbo",
   "type": "module",
   "version": "0.0.1",
   "description": "",
   "bin": {
-    "gs": "./dist/gsw.mjs"
+    "gt": "./dist/index.mjs"
   },
   "packageManager": "pnpm@10.24.0",
   "scripts": {
-    "dev": "pnpx tsx src/index.ts",
-    "dev:gs": "pnpx tsx src/command/gsw.ts",
+    "dev": "pnpm dlx tsx src/index.ts",
+    "dev:gs": "pnpm dlx tsx src/command/gsw.ts",
     "build": "tsdown",
-    "lint": "pnpm oxlint --type-aware"
+    "lint": "pnpm oxlint --type-aware",
+    "fmt": "prettier --write ."
   },
   "dependencies": {
     "commander": "^14.0.2",
-    "consola": "^3.4.2"
+    "consola": "^3.4.2",
+    "execa": "^9.6.1"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
