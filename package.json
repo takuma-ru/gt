@@ -4,5 +4,6 @@
   "scripts": {
     "p:core": "pnpm --filter git-turbo"
   },
-  "dependencies": {}
+  "dependencies": {
+  }
 }

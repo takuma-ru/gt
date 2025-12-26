@@ -2,6 +2,7 @@ packages:
   - packages/*
 
 catalog:
+  '@takuma-ru/rlse': 0.0.1-beta.8
   '@types/node': ^24.10.1
   oxlint: ^1.31.0
   oxlint-tsgolint: ^0.8.3

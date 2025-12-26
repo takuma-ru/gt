@@ -1,8 +1,35 @@
 {
   "name": "git-turbo",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "",
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/",
+    "provenance": true
+  },
+  "license": "MPL-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:takuma-ru/gt.git"
+  },
+  "bugs": {
+    "url": "https://github.com/takuma-ru/gt/issues",
+    "email": "takuma-ru@takumaru.dev"
+  },
+  "homepage": "https://github.com/takuma-ru/gt#readme",
+  "author": "takuma-ru <takuma-ru@takumaru.dev> (https://github.com/takuma-ru/)",
+  "keywords": [
+    "git",
+    "cli",
+    "productivity",
+    "workflow",
+    "automation",
+    "typescript",
+    "development-tools",
+    "tools"
+  ],
   "bin": {
     "gt": "./dist/index.mjs"
   },
@@ -12,7 +39,8 @@
     "dev:gs": "pnpm dlx tsx src/command/gsw.ts",
     "build": "tsdown",
     "lint": "pnpm oxlint --type-aware",
-    "fmt": "prettier --write ."
+    "fmt": "prettier --write .",
+    "release": "rlse"
   },
   "dependencies": {
     "commander": "^14.0.2",
@@ -20,6 +48,7 @@
     "execa": "^9.6.1"
   },
   "devDependencies": {
+    "@takuma-ru/rlse": "catalog:",
     "@types/node": "catalog:",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
