@@ -21,7 +21,7 @@ gt -h
 
 ## Commands
 
-### `nb <base-branch> <new-branch> [options]`
+### `gt nb <base-branch> <new-branch> [options]`
 
 Create a new branch from a base branch with a prefix.
 
@@ -37,4 +37,39 @@ Create a new branch from a base branch with a prefix.
 ```bash
 gt nb main my-feature -f
 # -> creates feature/my-feature from main
+```
+
+### `gt sy [options]`
+
+Sync current branch with main branch (stash, pull main, rebase, stash pop).
+
+**Options:**
+
+- `-b, --base <base-branch>` : Base branch to sync with (default: `main`)
+
+### `gt cl [options]`
+
+Cleanup merged local branches.
+
+**Options:**
+
+- `-b, --base <base-branch>` : Base branch to check against (default: `main`)
+- `-y, --yes` : Skip confirmation
+
+### `gt pr [message]`
+
+Add, commit, push and create a pull request using GitHub CLI (`gh`).
+
+## Tips
+
+### Set up Aliases for even faster access
+
+If you find yourself using certain commands frequently, you can set up aliases in your shell configuration (e.g., `.zshrc` or `.bashrc`):
+
+```bash
+# Example: Use 'nb' instead of 'gt nb'
+alias nb='gt nb'
+
+# Example: Use 'sy' instead of 'gt sy'
+alias sy='gt sy'
 ```
