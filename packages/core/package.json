@@ -12,7 +12,7 @@
   "license": "MPL-2.0",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:takuma-ru/gt.git"
+    "url": "git+ssh://git@github.com/takuma-ru/gt.git"
   },
   "bugs": {
     "url": "https://github.com/takuma-ru/gt/issues",
@@ -30,8 +30,14 @@
     "development-tools",
     "tools"
   ],
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md",
+    "package.json"
+  ],
   "bin": {
-    "gt": "./dist/index.mjs"
+    "gt": "dist/index.mjs"
   },
   "packageManager": "pnpm@10.24.0",
   "scripts": {
