@@ -3,6 +3,7 @@ import { consola } from "consola";
 import {
   gitGetCurrentBranch,
   gitGetStatus,
+  gitHasRemote,
   gitPull,
   gitRebase,
   gitStash,
@@ -38,11 +39,20 @@ export const syCommand = (program: Command) => {
           stashed = true;
         }
 
-        consola.info(
-          `Switching to ${baseBranch} and pulling latest changes...`,
-        );
+        consola.info(`Switching to ${baseBranch}...`);
         await gitSwitch(baseBranch);
-        await gitPull("origin", baseBranch);
+
+        const hasOrigin = await gitHasRemote("origin");
+        if (hasOrigin) {
+          consola.info(`Pulling latest changes from origin/${baseBranch}...`);
+          try {
+            await gitPull("origin", baseBranch);
+          } catch {
+            consola.warn(`Failed to pull from origin/${baseBranch}.`);
+          }
+        } else {
+          consola.info(`No 'origin' remote found. Skipping pull.`);
+        }
 
         consola.info(
           `Switching back to ${currentBranch} and rebasing on ${baseBranch}...`,

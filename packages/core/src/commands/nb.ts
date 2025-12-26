@@ -1,6 +1,6 @@
 import { Command } from "commander";
 import { consola } from "consola";
-import { gitCreateBranch, gitFetch } from "../utils/git";
+import { gitCreateBranch, gitFetch, gitHasRemote } from "../utils/git";
 
 export const nbCommand = (program: Command) => {
   program
@@ -22,13 +22,25 @@ export const nbCommand = (program: Command) => {
       const fullBranchName = `${prefix}${newBranch}`;
 
       try {
-        consola.info(`Fetching ${baseBranch} from origin...`);
-        await gitFetch("origin", baseBranch);
+        const hasOrigin = await gitHasRemote("origin");
+        let startPoint = baseBranch;
 
-        consola.info(
-          `Creating branch ${fullBranchName} from origin/${baseBranch}...`,
-        );
-        await gitCreateBranch(fullBranchName, `origin/${baseBranch}`);
+        if (hasOrigin) {
+          consola.info(`Fetching ${baseBranch} from origin...`);
+          try {
+            await gitFetch("origin", baseBranch);
+            startPoint = `origin/${baseBranch}`;
+          } catch {
+            consola.warn(
+              `Failed to fetch ${baseBranch} from origin. Using local ${baseBranch} instead.`,
+            );
+          }
+        } else {
+          consola.info(`No 'origin' remote found. Using local ${baseBranch}.`);
+        }
+
+        consola.info(`Creating branch ${fullBranchName} from ${startPoint}...`);
+        await gitCreateBranch(fullBranchName, startPoint);
         consola.success(
           `Successfully created and switched to branch: ${fullBranchName}`,
         );
