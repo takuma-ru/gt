@@ -1,7 +1,7 @@
 {
   "name": "git-turbo",
   "type": "module",
-  "version": "0.0.1-beta.4",
+  "version": "0.0.1-beta.5",
   "description": "",
   "private": false,
   "publishConfig": {
