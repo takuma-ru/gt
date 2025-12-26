@@ -52,8 +52,8 @@ jobs:
 
       - uses: pnpm/action-setup@v4
 
-      - name: Setup .npmrc
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
+      # - name: Setup .npmrc
+      #   run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
 
       - name: Install dependencies
         run: pnpm i --frozen-lockfile
@@ -68,8 +68,8 @@ jobs:
           else
             pnpm p:core release --level ${{ github.event.inputs.level }}
           fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        # env:
+        #   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Get Current package version
         id: get-package-version
