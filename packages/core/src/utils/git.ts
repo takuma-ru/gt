@@ -17,8 +17,9 @@ export const gitSwitch = async (branch: string, options: string[] = []) => {
 export const gitCreateBranch = async (
   newBranch: string,
   baseBranch?: string,
+  options: string[] = [],
 ) => {
-  const args = ["switch", "-c", newBranch];
+  const args = ["switch", "-c", newBranch, ...options];
   if (baseBranch) args.push(baseBranch);
   return await execa("git", args);
 };
