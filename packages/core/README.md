@@ -2,7 +2,10 @@
 
 A supercharged CLI for Git, designed to streamline your workflow and boost productivity. With `gt`, you can execute common Git commands faster and more efficiently, making version control a breeze. Whether you're a seasoned developer or just getting started with Git, `gt` offers a user-friendly interface and powerful features to enhance your coding experience. Say goodbye to complex Git commands and hello to `gt` – your new best friend in version control!
 
+![gt-nb](https://github.com/user-attachments/assets/8fdce240-b438-4815-a342-4e0b573306bc)
+
 ## Quick Start
+
 
 ```bash
 npm install -g git-turbo
