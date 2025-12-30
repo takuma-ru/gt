@@ -1,8 +1,8 @@
 {
   "name": "git-turbo",
   "type": "module",
-  "version": "0.0.1-beta.9",
-  "description": "",
+  "version": "0.0.1-beta.8",
+  "description": "🚀 A supercharged Git CLI to streamline your workflow with automated branch naming, syncing, and PR creation.",
   "private": false,
   "publishConfig": {
     "access": "public",

@@ -1,6 +1,7 @@
 {
   "editor.formatOnSave": true,
   "oxc.enable": true,
+  "biome.enabled": false,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit",
     "source.fixAll.stylelint": "explicit",

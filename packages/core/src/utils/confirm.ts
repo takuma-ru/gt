@@ -88,7 +88,7 @@ export const formatConfirmBox = (title: string, rows: ConfirmRowItemNew) => {
   for (let i = 0; i < prepared.length; i++) {
     const { label, labelVisible, value } = prepared[i]!;
     linesArr[i] =
-      `${dimBar}  ${padRight(label, labelVisible, labelWidth)} : ${value}`;
+      `  ${dimBar} ${padRight(label, labelVisible, labelWidth)} : ${value}`;
   }
 
   const lines = linesArr.join("\n");
