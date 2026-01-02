@@ -1,6 +1,7 @@
 import { Command } from "commander";
 import { consola } from "consola";
 import { colors } from "consola/utils";
+import { loadGtConfig } from "../config/load";
 import { confirm } from "../utils/confirm";
 import {
   gitCreateBranch,
@@ -11,18 +12,9 @@ import {
   gitHasRemote,
 } from "../utils/git";
 
-const PREFIX_ALIASES: Record<string, string> = {
-  f: "feature/",
-  b: "fix/",
-  r: "refactor/",
-  c: "chore/",
-  h: "hotfix/",
-  s: "spike/",
-};
-
-const normalizePrefix = (prefix: string) => {
+const normalizePrefix = (prefix: string, prefixes: Record<string, string>) => {
   const trimmed = prefix.trim();
-  const mapped = PREFIX_ALIASES[trimmed] ?? trimmed;
+  const mapped = prefixes[trimmed] ?? trimmed;
   if (!mapped) return "";
   if (mapped.endsWith("/")) return mapped;
   return `${mapped}/`;
@@ -46,9 +38,12 @@ export const nbCommand = (program: Command) => {
     .option("-F, --force", "Delete existing branch if it exists", false)
     .option("-y, --yes", "Skip confirmation", false)
     .action(async (baseBranch: string, newBranch: string, options: any) => {
+      const { config } = await loadGtConfig();
+      const prefixes = config.nb.prefixes;
+
       const prefix =
         typeof options.prefix === "string"
-          ? normalizePrefix(options.prefix)
+          ? normalizePrefix(options.prefix, prefixes)
           : "";
       const fullBranchName = `${prefix}${newBranch}`;
 

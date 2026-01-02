@@ -10,6 +10,15 @@ export const gitFetch = async (
   return await execa("git", args);
 };
 
+export const gitGetTopLevel = async () => {
+  try {
+    const { stdout } = await execa("git", ["rev-parse", "--show-toplevel"]);
+    return stdout.trim();
+  } catch {
+    return process.cwd();
+  }
+};
+
 export const gitSwitch = async (branch: string, options: string[] = []) => {
   return await execa("git", ["switch", ...options, branch]);
 };

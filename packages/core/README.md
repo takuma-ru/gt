@@ -6,7 +6,6 @@ A supercharged CLI for Git, designed to streamline your workflow and boost produ
 
 ## Quick Start
 
-
 ```bash
 npm install -g git-turbo
 ```
@@ -15,6 +14,28 @@ npm install -g git-turbo
 # create new feature branch from base branch
 gt nb main feature-branch -p f
 # -> creates feature/feature-branch from main (and fetches from origin if available)
+```
+
+### Config (optional)
+
+You can configure prefix aliases by adding a `gt.config.ts` file to the repository root.
+
+```ts
+// gt.config.ts
+import { defineConfig } from "git-turbo/config";
+
+export default defineConfig({
+  nb: {
+    prefixes: {
+      f: "feature/",
+      b: "fix/",
+      r: "refactor/",
+      c: "chore/",
+      h: "hotfix/",
+      s: "spike/",
+    },
+  },
+});
 ```
 
 ```bash
