@@ -2,7 +2,8 @@
   "name": "git-turbo-workspace",
   "packageManager": "pnpm@10.24.0",
   "scripts": {
-    "p:core": "pnpm --filter git-turbo"
+    "p:core": "pnpm --filter git-turbo",
+    "gt:sandbox": "bash ./playgrounds/gt-sandbox.sh"
   },
   "dependencies": {
   }

@@ -141,3 +141,6 @@ vite.config.ts.timestamp-*
 .vite/
 
 .user-memory
+
+# Local sandbox repos for testing gt commands (nested git repos)
+playgrounds/.gt-sandbox/*

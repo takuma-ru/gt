@@ -223,13 +223,15 @@ export const nbCommand = (program: Command) => {
           },
         ]);
 
-        const ok = await consola.prompt("Proceed?", {
-          type: "confirm",
-          initialValue: true,
-        });
-        if (!ok) {
-          consola.error("Cancelled.");
-          return;
+        if (!options.yes) {
+          const ok = await consola.prompt("Proceed?", {
+            type: "confirm",
+            initialValue: true,
+          });
+          if (!ok) {
+            consola.error("Cancelled.");
+            return;
+          }
         }
 
         if (willDelete) {
