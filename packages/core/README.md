@@ -1,14 +1,29 @@
 # git-turbo (`gt`)
 
-A supercharged CLI for Git, designed to streamline your workflow and boost productivity. With `gt`, you can execute common Git commands faster and more efficiently, making version control a breeze. Whether you're a seasoned developer or just getting started with Git, `gt` offers a user-friendly interface and powerful features to enhance your coding experience. Say goodbye to complex Git commands and hello to `gt` – your new best friend in version control!
+`gt` is a lightweight CLI that streamlines common Git workflows: create prefixed branches, sync with your base branch, clean up merged locals, and open PRs via GitHub CLI.
+
+It focuses on the repetitive steps you do every day and turns them into short, consistent commands.
 
 ![gt-nb](https://github.com/user-attachments/assets/8fdce240-b438-4815-a342-4e0b573306bc)
+
+## What you can do with `gt`
+
+- `gt nb`: Create a new branch from a base branch with a consistent prefix
+- `gt sy`: Sync your current branch with a base branch (stash -> rebase -> restore)
+- `gt cl`: Clean up merged local branches
+- `gt pr`: Add/commit/push and create a pull request via GitHub CLI (`gh`)
 
 ## Quick Start
 
 ```bash
 npm install -g git-turbo
 ```
+
+**Requirements**
+
+- Git installed and available as `git`
+- Node.js installed (for `npm install -g`)
+- Optional: GitHub CLI `gh` (required for `gt pr`)
 
 ```bash
 # create new feature branch from base branch
@@ -82,6 +97,18 @@ Sync current branch with main branch (stash, pull main, rebase, stash pop).
 
 - `-b, --base <base-branch>` : Base branch to sync with (default: `main`)
 
+**Example:**
+
+```bash
+gt sy
+# -> sync with main
+```
+
+```bash
+gt sy -b develop
+# -> sync with develop
+```
+
 ### `gt cl [options]`
 
 Cleanup merged local branches.
@@ -91,9 +118,33 @@ Cleanup merged local branches.
 - `-b, --base <base-branch>` : Base branch to check against (default: `main`)
 - `-y, --yes` : Skip confirmation
 
+**Example:**
+
+```bash
+gt cl
+# -> delete local branches already merged into main
+```
+
+```bash
+gt cl -b develop -y
+# -> clean up using develop as base (without confirmation)
+```
+
 ### `gt pr [message]`
 
 Add, commit, push and create a pull request using GitHub CLI (`gh`).
+
+**Example:**
+
+```bash
+gt pr
+# -> commits with a default message and creates a PR via `gh pr create --fill`
+```
+
+```bash
+gt pr "chore: update deps"
+# -> commits with the provided message and creates a PR
+```
 
 ## Tips
 
