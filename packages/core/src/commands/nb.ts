@@ -3,6 +3,8 @@ import { consola } from "consola";
 import { colors } from "consola/utils";
 import { loadGtConfig } from "../config/load";
 import { confirm } from "../utils/confirm";
+import { createDryRun } from "../utils/dryRun";
+import { ExitCode } from "../utils/exitCode";
 import {
   gitCreateBranch,
   gitDeleteBranch,
@@ -37,9 +39,12 @@ export const nbCommand = (program: Command) => {
     .option("-t, --track", "Set upstream when creating from remote", false)
     .option("-F, --force", "Delete existing branch if it exists", false)
     .option("-y, --yes", "Skip confirmation", false)
+    .option("--dry-run", "Print planned commands and exit", false)
     .action(async (baseBranch: string, newBranch: string, options: any) => {
       const { config } = await loadGtConfig();
       const prefixes = config.nb.prefixes;
+
+      const dryRun = createDryRun(Boolean(options.dryRun));
 
       const prefix =
         typeof options.prefix === "string"
@@ -93,6 +98,7 @@ export const nbCommand = (program: Command) => {
             consola.info(
               `Already on '${fullBranchName}'. Nothing to do (use another name to create a new branch).`,
             );
+            process.exitCode = ExitCode.Noop;
             return;
           }
         }
@@ -100,7 +106,7 @@ export const nbCommand = (program: Command) => {
         if (remoteName && hasRemote) {
           consola.info(`Fetching ${baseBranchName} from ${remoteName}...`);
           try {
-            await gitFetch(remoteName, baseBranchName);
+            await gitFetch(remoteName, baseBranchName, [], dryRun);
             startPoint = `${remoteName}/${baseBranchName}`;
           } catch {
             consola.warn(
@@ -166,11 +172,14 @@ export const nbCommand = (program: Command) => {
           startPoint.startsWith(`${remoteName}/`),
         );
 
+        const createOptions: string[] = [];
+        if (willTrack) createOptions.push("--track");
+
         const fetchReason = remoteName
           ? `remote '${remoteName}' not found`
           : "no remote";
 
-        confirm("confirm", [
+        confirm("Action confirm", [
           {
             title: { icon: "branch", color: "cyan", text: "branch" },
             value: { text: colors.bold(fullBranchName) },
@@ -223,6 +232,20 @@ export const nbCommand = (program: Command) => {
           },
         ]);
 
+        if (dryRun) {
+          if (willDelete) {
+            await gitDeleteBranch(fullBranchName, true, dryRun);
+          }
+          await gitCreateBranch(
+            fullBranchName,
+            startPoint,
+            createOptions,
+            dryRun,
+          );
+          dryRun.printAndExit();
+          return;
+        }
+
         if (!options.yes) {
           const ok = await consola.prompt("Proceed?", {
             type: "confirm",
@@ -230,6 +253,7 @@ export const nbCommand = (program: Command) => {
           });
           if (!ok) {
             consola.error("Cancelled.");
+            process.exitCode = ExitCode.Noop;
             return;
           }
         }
@@ -239,9 +263,6 @@ export const nbCommand = (program: Command) => {
           await gitDeleteBranch(fullBranchName, true);
         }
 
-        const createOptions: string[] = [];
-        if (willTrack) createOptions.push("--track");
-
         await gitCreateBranch(fullBranchName, startPoint, createOptions);
         consola.success(
           `Successfully created and switched to branch: ${fullBranchName}`,
@@ -250,7 +271,7 @@ export const nbCommand = (program: Command) => {
         consola.error(
           `Failed to create branch: ${error instanceof Error ? error.message : String(error)}`,
         );
-        process.exit(1);
+        process.exit(ExitCode.Error);
       }
     });
 };

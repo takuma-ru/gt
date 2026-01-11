@@ -1,5 +1,9 @@
 import { Command } from "commander";
 import { consola } from "consola";
+import { colors } from "consola/utils";
+import { confirm } from "../utils/confirm";
+import { createDryRun } from "../utils/dryRun";
+import { ExitCode } from "../utils/exitCode";
 import {
   gitGetCurrentBranch,
   gitGetStatus,
@@ -18,8 +22,10 @@ export const syCommand = (program: Command) => {
       "Sync current branch with main branch (stash, pull main, rebase, stash pop)",
     )
     .option("-b, --base <base-branch>", "Base branch to sync with", "main")
+    .option("--dry-run", "Print planned commands and exit", false)
     .action(async (options) => {
       const baseBranch = options.base;
+      const dryRun = createDryRun(Boolean(options.dryRun));
       let currentBranch = "";
       let stashed = false;
 
@@ -33,7 +39,67 @@ export const syCommand = (program: Command) => {
 
         // Check for changes
         const status = await gitGetStatus();
-        if (status) {
+        const willStash = Boolean(status);
+        const hasOrigin = await gitHasRemote("origin");
+
+        if (dryRun) {
+          confirm("Action confirm", [
+            {
+              title: { icon: "branch", color: "cyan", text: "branch" },
+              value: { text: colors.bold(currentBranch) },
+            },
+            {
+              title: { icon: "rightArrow", color: "cyan", text: "onto" },
+              value: { text: colors.bold(baseBranch) },
+            },
+            {
+              title: {
+                icon: "plus",
+                color: willStash ? "yellow" : "dim",
+                text: "stash",
+              },
+              value: { text: willStash ? "yes" : "no" },
+              disabled: !willStash,
+            },
+            {
+              title: {
+                icon: "reload",
+                color: hasOrigin ? "yellow" : "dim",
+                text: "pull",
+              },
+              value: {
+                color: "dim",
+                text: hasOrigin ? `origin/${baseBranch}` : "skip (no origin)",
+              },
+              disabled: !hasOrigin,
+            },
+            {
+              title: { icon: "reload", color: "yellow", text: "rebase" },
+              value: { text: baseBranch },
+            },
+            {
+              title: {
+                icon: "minus",
+                color: willStash ? "yellow" : "dim",
+                text: "stash pop",
+              },
+              value: { text: willStash ? "yes" : "no" },
+              disabled: !willStash,
+            },
+          ]);
+
+          if (willStash) await gitStash(dryRun);
+          await gitSwitch(baseBranch, [], dryRun);
+          if (hasOrigin) await gitPull("origin", baseBranch, dryRun);
+          await gitSwitch(currentBranch, [], dryRun);
+          await gitRebase(baseBranch, dryRun);
+          if (willStash) await gitStashPop(dryRun);
+
+          dryRun.printAndExit();
+          return;
+        }
+
+        if (willStash) {
           consola.info("Stashing local changes...");
           await gitStash();
           stashed = true;
@@ -41,8 +107,6 @@ export const syCommand = (program: Command) => {
 
         consola.info(`Switching to ${baseBranch}...`);
         await gitSwitch(baseBranch);
-
-        const hasOrigin = await gitHasRemote("origin");
         if (hasOrigin) {
           consola.info(`Pulling latest changes from origin/${baseBranch}...`);
           try {
@@ -80,7 +144,7 @@ export const syCommand = (program: Command) => {
             // Ignore error if we can't even switch back
           }
         }
-        process.exit(1);
+        process.exit(ExitCode.Error);
       }
     });
 };

@@ -1,5 +1,6 @@
 import { consola } from "consola";
 import { colors, stripAnsi } from "consola/utils";
+import { nestedBox, renderNestedBox } from "./nestedBox";
 
 export type ConfirmMarkerColor = "cyan" | "yellow" | "red" | "green" | "dim";
 
@@ -62,7 +63,44 @@ const formatRowValue = (row: ConfirmRowItem) => {
 export const formatConfirmBox = (title: string, rows: ConfirmRowItemNew) => {
   if (rows.length === 0) return title;
 
-  const dimBar = colors.dim("║");
+  let labelWidth = 0;
+  const prepared: Array<{
+    label: string;
+    labelVisible: number;
+    value: string;
+  }> = new Array(rows.length);
+
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i]!;
+    const label = formatRowTitle(row);
+    const labelVisible = stripAnsi(label).length;
+    if (labelVisible > labelWidth) labelWidth = labelVisible;
+
+    prepared[i] = {
+      label,
+      labelVisible,
+      value: formatRowValue(row),
+    };
+  }
+
+  const linesArr: string[] = new Array(prepared.length);
+  for (let i = 0; i < prepared.length; i++) {
+    const { label, labelVisible, value } = prepared[i]!;
+    linesArr[i] = `${padRight(label, labelVisible, labelWidth)} : ${value}`;
+  }
+
+  return renderNestedBox({
+    title,
+    titlePrefix: "ℹ",
+    lines: linesArr,
+  }).join("\n");
+};
+
+export const confirm = (title: string, rows: ConfirmRowItemNew) => {
+  if (rows.length === 0) {
+    consola.info(title);
+    return;
+  }
 
   let labelWidth = 0;
   const prepared: Array<{
@@ -87,15 +125,8 @@ export const formatConfirmBox = (title: string, rows: ConfirmRowItemNew) => {
   const linesArr: string[] = new Array(prepared.length);
   for (let i = 0; i < prepared.length; i++) {
     const { label, labelVisible, value } = prepared[i]!;
-    linesArr[i] =
-      `  ${dimBar} ${padRight(label, labelVisible, labelWidth)} : ${value}`;
+    linesArr[i] = `${padRight(label, labelVisible, labelWidth)} : ${value}`;
   }
 
-  const lines = linesArr.join("\n");
-
-  return `${title}\n${lines}`;
-};
-
-export const confirm = (title: string, rows: ConfirmRowItemNew) => {
-  consola.info(formatConfirmBox(title, rows));
+  nestedBox({ title, titlePrefix: "ℹ", lines: linesArr });
 };
